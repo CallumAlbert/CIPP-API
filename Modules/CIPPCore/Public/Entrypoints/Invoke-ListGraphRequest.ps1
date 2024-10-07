@@ -2,10 +2,9 @@
 function Invoke-ListGraphRequest {
     <#
     .FUNCTIONALITY
-    Entrypoint
-
+        Entrypoint
     .ROLE
-    Core.Read
+        CIPP.Core.Read
     #>
     [CmdletBinding()]
     param($Request, $TriggerMetadata)
@@ -19,11 +18,11 @@ function Invoke-ListGraphRequest {
 
     $Parameters = @{}
     if ($Request.Query.'$filter') {
-        $Parameters.'$filter' = $Request.Query.'$filter'
+        $Parameters.'$filter' = $Request.Query.'$filter' -replace '%tenantid%', $env:TenantId
     }
 
     if (!$Request.Query.'$filter' -and $Request.Query.graphFilter) {
-        $Parameters.'$filter' = $Request.Query.graphFilter
+        $Parameters.'$filter' = $Request.Query.graphFilter -replace '%tenantid%', $env:TenantId
     }
 
     if ($Request.Query.'$select') {
@@ -41,6 +40,7 @@ function Invoke-ListGraphRequest {
     if ($Request.Query.'$count') {
         $Parameters.'$count' = ([string]([System.Boolean]$Request.Query.'$count')).ToLower()
     }
+
 
     if ($Request.Query.'$orderby') {
         $Parameters.'$orderby' = $Request.Query.'$orderby'
@@ -76,6 +76,14 @@ function Invoke-ListGraphRequest {
         $GraphRequestParams.NoPagination = [System.Boolean]$Request.Query.NoPagination
     }
 
+    if ($Request.Query.manualPagination) {
+        $GraphRequestParams.NoPagination = [System.Boolean]$Request.Query.manualPagination
+    }
+
+    if ($Request.Query.nextLink) {
+        $GraphRequestParams.nextLink = $Request.Query.nextLink
+    }
+
     if ($Request.Query.CountOnly) {
         $GraphRequestParams.CountOnly = [System.Boolean]$Request.Query.CountOnly
     }
@@ -102,6 +110,10 @@ function Invoke-ListGraphRequest {
         if ($Request.Query.TenantFilter -eq 'AllTenants') {
             $GraphRequestParams.TenantFilter = (Get-Tenants | Select-Object -First 1).customerId
         }
+    }
+
+    if ($Request.Query.AsApp) {
+        $GraphRequestParams.AsApp = $true
     }
 
     Write-Host ($GraphRequestParams | ConvertTo-Json)
