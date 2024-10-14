@@ -39,14 +39,10 @@ function Invoke-CIPPStandardPerUserMFA {
             url    = "/users/$id/authentication/requirements"
         }
     }
-    if ($Requests) {
-        $UsersWithoutMFA = (New-GraphBulkRequest -tenantid $tenant -Requests @($Requests) -asapp $true).body | Where-Object { $_.perUserMfaState -ne 'enforced' } | Select-Object peruserMFAState, @{Name = 'userPrincipalName'; Expression = { [System.Web.HttpUtility]::UrlDecode($_.'@odata.context'.split("'")[1]) } }
-    } else {
-        $UsersWithoutMFA = @()
-    }
+    $UsersWithoutMFA = (New-GraphBulkRequest -tenantid $tenant -Requests @($Requests) -asapp $true).body | Where-Object { $_.perUserMfaState -ne 'enforced' } | Select-Object peruserMFAState, @{Name = 'userPrincipalName'; Expression = { [System.Web.HttpUtility]::UrlDecode($_.'@odata.context'.split("'")[1]) } }
 
     If ($Settings.remediate -eq $true) {
-        if (($UsersWithoutMFA | Measure-Object).Count -gt 0) {
+        if (($UsersWithoutMFA.userPrincipalName | Measure-Object).Count -gt 0) {
             try {
                 $MFAMessage = Set-CIPPPerUserMFA -TenantFilter $Tenant -userId @($UsersWithoutMFA.userPrincipalName) -State 'enforced'
                 Write-LogMessage -API 'Standards' -tenant $tenant -message $MFAMessage -sev Info

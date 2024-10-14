@@ -51,10 +51,10 @@ function Invoke-CIPPStandardAntiPhishPolicy {
     param($Tenant, $Settings)
     ##$Rerun -Type Standard -Tenant $Tenant -Settings $Settings 'AntiPhishPolicy'
 
-    $PolicyList = @('Default Anti-Phishing Policy', 'Office365 AntiPhish Default (Default)')
-    $ExistingPolicy = New-ExoRequest -tenantid $Tenant -cmdlet 'Get-AntiPhishPolicy' | Where-Object -Property Name -In $PolicyList
-    $PolicyName = $ExistingPolicy.Name
-    $CurrentState = $ExistingPolicy |
+    $PolicyName = @('Default Anti-Phishing Policy', 'Office365 AntiPhish Default (Default)')
+
+    $CurrentState = New-ExoRequest -tenantid $Tenant -cmdlet 'Get-AntiPhishPolicy' |
+        Where-Object -Property Name -In $PolicyName |
         Select-Object Name, Enabled, PhishThresholdLevel, EnableMailboxIntelligence, EnableMailboxIntelligenceProtection, EnableSpoofIntelligence, EnableFirstContactSafetyTips, EnableSimilarUsersSafetyTips, EnableSimilarDomainsSafetyTips, EnableUnusualCharactersSafetyTips, EnableUnauthenticatedSender, EnableViaTag, AuthenticationFailAction, SpoofQuarantineTag, MailboxIntelligenceProtectionAction, MailboxIntelligenceQuarantineTag, TargetedUserProtectionAction, TargetedUserQuarantineTag, TargetedDomainProtectionAction, TargetedDomainQuarantineTag, EnableOrganizationDomainsProtection
 
     $StateIsCorrect = ($CurrentState.Name -eq $PolicyName) -and

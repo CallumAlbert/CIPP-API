@@ -28,20 +28,14 @@ Function Invoke-ExecCPVPermissions {
     }
 
     $GraphRequest = try {
-        if ($TenantFilter -notin @('PartnerTenant', $env:TenantId)) {
+        if ($TenantFilter -ne 'PartnerTenant') {
             Set-CIPPCPVConsent @CPVConsentParams
         } else {
             $TenantFilter = $env:TenantID
-            $Tenant = [PSCustomObject]@{
-                displayName       = '*Partner Tenant'
-                defaultDomainName = $env:TenantID
-            }
         }
         Add-CIPPApplicationPermission -RequiredResourceAccess 'CIPPDefaults' -ApplicationId $ENV:ApplicationID -tenantfilter $TenantFilter
         Add-CIPPDelegatedPermission -RequiredResourceAccess 'CIPPDefaults' -ApplicationId $ENV:ApplicationID -tenantfilter $TenantFilter
-        if ($TenantFilter -notin @('PartnerTenant', $env:TenantId)) {
-            Set-CIPPSAMAdminRoles -TenantFilter $TenantFilter
-        }
+        Set-CIPPSAMAdminRoles -TenantFilter $TenantFilter
         $Success = $true
     } catch {
         "Failed to update permissions for $($Tenant.displayName): $($_.Exception.Message)"

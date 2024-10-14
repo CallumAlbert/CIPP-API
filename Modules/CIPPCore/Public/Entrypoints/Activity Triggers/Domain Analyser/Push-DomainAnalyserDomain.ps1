@@ -124,6 +124,7 @@ function Push-DomainAnalyserDomain {
     } catch {
         $Message = 'SPF Error'
         Write-LogMessage -API 'DomainAnalyser' -tenant $DomainObject.TenantId -message $Message -LogData (Get-CippException -Exception $_) -sev Error
+        return $Message
     }
 
     # Check SPF Record
@@ -186,7 +187,7 @@ function Push-DomainAnalyserDomain {
     } catch {
         $Message = 'DMARC Error'
         Write-LogMessage -API 'DomainAnalyser' -tenant $DomainObject.TenantId -message $Message -LogData (Get-CippException -Exception $_) -sev Error
-        #return $Message
+        return $Message
     }
 
     # DNS Sec Check
@@ -204,7 +205,7 @@ function Push-DomainAnalyserDomain {
     } catch {
         $Message = 'DNSSEC Error'
         Write-LogMessage -API 'DomainAnalyser' -tenant $DomainObject.TenantId -message $Message -LogData (Get-CippException -Exception $_) -sev Error
-        #return $Message
+        return $Message
     }
 
     # DKIM Check
@@ -239,7 +240,7 @@ function Push-DomainAnalyserDomain {
     } catch {
         $Message = 'DKIM Exception'
         Write-LogMessage -API 'DomainAnalyser' -tenant $DomainObject.TenantId -message $Message -LogData (Get-CippException -Exception $_) -sev Error
-        #return $Message
+        return $Message
     }
 
     # Get Microsoft DKIM CNAME selector Records
@@ -302,6 +303,7 @@ function Push-DomainAnalyserDomain {
         } catch {
             $ErrorMessage = Get-CippException -Exception $_
             Write-LogMessage -API 'DomainAnalyser' -tenant $DomainObject.TenantId -message "MS CNAME DKIM error: $($ErrorMessage.NormalizedError)" -LogData $ErrorMessage -sev Error
+            return $ErrorMessage.NormalizedError
         }
     }
 
