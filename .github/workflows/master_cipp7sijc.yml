@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: dev_api
+name: Build and deploy Powershell project to Azure Function App - cipp7sijc
 
 on:
   push:
     branches:
-      - dev
+      - master
   workflow_dispatch:
 
 env:
@@ -14,7 +14,6 @@ env:
 
 jobs:
   deploy:
-    if: github.event.repository.fork == false && github.event_name == 'push'
     runs-on: windows-latest
     
     steps:
@@ -25,7 +24,7 @@ jobs:
         uses: Azure/functions-action@v1
         id: fa
         with:
-          app-name: 'cippjta72'
+          app-name: 'cipp7sijc'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5B44448119C645C099EE192346D7433A }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0B2146E175214EA18CEE06F81A0079B6 }}
