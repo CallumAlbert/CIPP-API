@@ -70,7 +70,7 @@ function Add-CIPPScheduledTask {
             $ImportedModules = [System.Collections.Generic.List[string]]::new()
             if (-not $Command) {
                 try {
-                    foreach ($SiblingModule in @('CIPPStandards', 'CIPPAlerts', 'CIPPTests', 'CIPPDB')) {
+                    foreach ($SiblingModule in @('CIPPStandards', 'CIPPAlerts', 'CIPPTests', 'CIPPDB', 'CippExtensions')) {
                         if (-not (Get-Module -Name $SiblingModule)) {
                             Import-Module $SiblingModule -ErrorAction SilentlyContinue
                             if (Get-Module -Name $SiblingModule) {
